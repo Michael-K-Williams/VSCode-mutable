@@ -64,17 +64,6 @@ Add to your `flake.nix`:
 
 ### Standalone Usage
 
-
-# Run the installer directly
-```bash
-nix run github:Michael-K-Williams/VSCode-mutable/main
-```
-
-# Run VS Code with FHS wrapper (requires prior installation)
-```bash
-nix run github:Michael-K-Williams/VSCode-mutable/main#vscode-fhs
-```
-
 # Build packages
 ```bash
 nix build github:Michael-K-Williams/VSCode-mutable/main  # builds installer
