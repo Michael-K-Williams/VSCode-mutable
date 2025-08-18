@@ -36,7 +36,6 @@ You can import the module directly in your NixOS configuration without adding it
 Add to your `flake.nix`:
 
 ```nix
-```nix
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -62,25 +61,33 @@ Add to your `flake.nix`:
   };
 }
 ```
-```
 
 ### Standalone Usage
 
-```bash
+
 # Run the installer directly
+```bash
 nix run github:Michael-K-Williams/VSCode-mutable/main
+```
 
 # Run VS Code with FHS wrapper (requires prior installation)
+```bash
 nix run github:Michael-K-Williams/VSCode-mutable/main#vscode-fhs
+```
 
 # Build packages
+```bash
 nix build github:Michael-K-Williams/VSCode-mutable/main  # builds installer
 nix build github:Michael-K-Williams/VSCode-mutable/main#vscode-fhs  # builds FHS wrapper
+```
 
 # Run installer
+```bash
 ./result/bin/vscode-mutable-installer
+```
 
 # Run FHS wrapper (after installation)
+```bash
 ./result/bin/code
 ```
 
