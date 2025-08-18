@@ -12,25 +12,43 @@ A NixOS flake for installing Visual Studio Code in a mutable way, allowing for e
 
 ## Usage
 
+### Direct NixOS Module Import
+
+You can import the module directly in your NixOS configuration without adding it as a flake input:
+
+```nix
+{
+  imports = [
+    (builtins.getFlake "github:Michael-K-Williams/VSCode-mutable/main").nixosModules.default
+  ];
+
+  programs.vscode-mutable = {
+    enable = true;
+    userName = "yourusername";
+  };
+}
+```
+
 ### As a Flake Input
 
 Add to your `flake.nix`:
 
 ```nix
+```nix
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    vscode-nix = {
-      url = "github:yourusername/VSCode-Nix/main";
+    vscode-mutable = {
+      url = "github:Michael-K-Williams/VSCode-mutable/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { nixpkgs, vscode-nix, ... }: {
+  outputs = { nixpkgs, vscode-mutable, ... }: {
     nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        vscode-nix.nixosModules.default
+        vscode-mutable.nixosModules.default
         {
           programs.vscode-mutable = {
             enable = true;
@@ -42,15 +60,16 @@ Add to your `flake.nix`:
   };
 }
 ```
+```
 
 ### Standalone Usage
 
 ```bash
 # Run directly
-nix run github:yourusername/VSCode-Nix/main
+nix run github:Michael-K-Williams/VSCode-mutable/main
 
 # Build and install
-nix build github:yourusername/VSCode-Nix/main
+nix build github:Michael-K-Williams/VSCode-mutable/main
 ./result/bin/vscode-mutable-installer
 ```
 
