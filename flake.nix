@@ -15,6 +15,7 @@
       {
         packages = {
           vscode-mutable = vscode-package.vscode-mutable;
+          vscode-fhs = vscode-package.vscode-fhs;
           default = vscode-package.vscode-mutable;
         };
 
@@ -22,6 +23,10 @@
           vscode-mutable = {
             type = "app";
             program = "${vscode-package.vscode-mutable}/bin/vscode-mutable-installer";
+          };
+          vscode-fhs = {
+            type = "app";
+            program = "${vscode-package.vscode-fhs}/bin/code";
           };
           default = {
             type = "app";
@@ -46,6 +51,7 @@
       }) // {
         overlays.default = final: prev: {
           vscode-mutable = (import ./default.nix { pkgs = final; }).vscode-mutable;
+          vscode-fhs = (import ./default.nix { pkgs = final; }).vscode-fhs;
         };
 
         nixosModules.default = { config, lib, pkgs, ... }:
@@ -96,7 +102,10 @@
             };
 
             config = lib.mkIf cfg.enable {
-              environment.systemPackages = [ vscode-package.vscode-mutable ];
+              environment.systemPackages = [ 
+                vscode-package.vscode-mutable 
+                vscode-package.vscode-fhs
+              ];
               
               # Add /usr/local/bin to system PATH
               environment.localBinInPath = true;

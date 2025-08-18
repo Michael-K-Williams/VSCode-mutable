@@ -9,6 +9,8 @@ A NixOS flake for installing Visual Studio Code in a mutable way, allowing for e
 - Configurable installation directory and download URLs
 - Support for custom fonts
 - Proper library dependencies via nix-ld
+- **NEW**: FHS environment wrapper with comprehensive library support
+- Includes all necessary X11, GTK, audio, development, and font libraries
 
 ## Usage
 
@@ -65,12 +67,21 @@ Add to your `flake.nix`:
 ### Standalone Usage
 
 ```bash
-# Run directly
+# Run the installer directly
 nix run github:Michael-K-Williams/VSCode-mutable/main
 
-# Build and install
-nix build github:Michael-K-Williams/VSCode-mutable/main
+# Run VS Code with FHS wrapper (requires prior installation)
+nix run github:Michael-K-Williams/VSCode-mutable/main#vscode-fhs
+
+# Build packages
+nix build github:Michael-K-Williams/VSCode-mutable/main  # builds installer
+nix build github:Michael-K-Williams/VSCode-mutable/main#vscode-fhs  # builds FHS wrapper
+
+# Run installer
 ./result/bin/vscode-mutable-installer
+
+# Run FHS wrapper (after installation)
+./result/bin/code
 ```
 
 ## Configuration Options
@@ -93,6 +104,34 @@ This mutable installation approach allows:
 - Settings and configurations to persist
 - VS Code to update itself through its built-in update mechanism
 - Better integration with system desktop environments
+
+## FHS Environment Wrapper
+
+The FHS wrapper (`vscode-fhs`) provides a comprehensive runtime environment with all necessary libraries including:
+
+**Core System Libraries:**
+- `stdenv.cc.cc.lib`, `zlib`, `openssl`, `curl`, `expat`, `libxml2`, `libxslt`
+
+**Graphics & Display:**
+- `fontconfig`, `freetype`, `libxkbcommon`, `libGL`, `mesa`, `libgbm`, `vulkan-loader`, `libdrm`
+
+**X11/Xorg Libraries:**
+- Complete X11 library set including `libX11`, `libXext`, `libXrender`, `libXtst`, `libXi`, `libXcomposite`, `libXdamage`, `libXfixes`, `libXrandr`, `libxcb`
+
+**GTK/GUI Libraries:**
+- `systemd`, `glib`, `gtk3`, `pango`, `cairo`, `gdk-pixbuf`, `atk`
+
+**Audio & System Services:**
+- `nss`, `nspr`, `alsa-lib`, `at-spi2-core`, `cups`, `dbus`, `polkit`
+
+**Development Tools:**
+- `nodejs`, `python3`, `gcc`, `gnumake`
+
+**Comprehensive Font Support:**
+- Google Fonts, Source Code Pro, JetBrains Mono, Ubuntu Font Family
+- Noto Fonts (including CJK and Emoji support)
+- Nerd Fonts variants (FiraCode, JetBrains Mono, Ubuntu Mono, etc.)
+- Material Design Icons, Font Awesome, Powerline Fonts
 
 ## License
 
