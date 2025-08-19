@@ -83,7 +83,7 @@
       nerd-fonts.meslo-lg
       nerd-fonts.droid-sans-mono
     ];
-    runScript = "/opt/vscode-mutable/code";
+    runScript = "/opt/vscode-mutable/bin/code";
   };
 
   # System activation script for mutable VSCode installation

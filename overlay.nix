@@ -8,10 +8,7 @@ let
   vscode-nix = final.callPackage ./default.nix { userName = "thealtkitkat"; };
 in
 {
-  # Replace the regular vscode package with our FHS environment version
-  vscode = vscode-nix.vscode-fhs-complete;
-  
-  # Also provide the individual components if needed
+  # Provide VSCode-Nix components (vscode package is provided by vscode-mutable module)
   vscode-fhs-complete = vscode-nix.vscode-fhs-complete;
   vscode-fhs = vscode-nix.vscode-fhs;
   vscode-complete = vscode-nix.vscode-complete;
