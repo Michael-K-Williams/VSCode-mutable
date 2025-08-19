@@ -84,5 +84,5 @@ pkgs.buildFHSEnv {
     nerd-fonts.droid-sans-mono
   ];
   
-  runScript = "/opt/vscode-mutable/bin/code";
+  runScript = "/opt/vscode-mutable/code";
 }

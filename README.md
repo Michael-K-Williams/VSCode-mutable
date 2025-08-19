@@ -1,18 +1,40 @@
 # VSCode-Nix
 
-A NixOS flake for installing Visual Studio Code in a mutable way, allowing for extensions and settings to be modified after installation.
+A NixOS package for installing Visual Studio Code in a mutable way with FHS environment support, allowing extensions to modify core VS Code files.
 
 ## Features
 
-- Installs VS Code to `/opt/vscode-mutable` by default
-- Creates desktop entries and symlinks
-- Configurable installation directory and download URLs
-- Support for custom fonts
-- Proper library dependencies via nix-ld
-- **NEW**: FHS environment wrapper with comprehensive library support
-- Includes all necessary X11, GTK, audio, development, and font libraries
+- **Complete FHS Environment**: Provides all necessary libraries for VS Code and extensions
+- **Mutable Installation**: Allows extensions to modify VS Code core files
+- **System Integration**: Automatic desktop entries and activation scripts
+- **Comprehensive Libraries**: X11, GTK, audio, development tools, and fonts
+- **Drop-in Replacement**: Matches the exact functionality from NixOS system configurations
 
-## Usage
+## Quick Start
+
+### Method 1: Direct Package Import (Recommended)
+
+Add to your NixOS configuration:
+
+```nix
+{ config, pkgs, ... }:
+
+let
+  vscode-nix = pkgs.callPackage /path/to/VSCode-Nix { userName = "yourusername"; };
+in
+{
+  environment.systemPackages = [
+    vscode-nix.vscode-fhs-complete  # FHS environment with all libraries
+  ];
+
+  # Mutable installation with system activation
+  system.activationScripts.vscode-mutable = vscode-nix.vscode-activation;
+  
+  nixpkgs.config.allowUnfree = true;
+}
+```
+
+### Method 2: Traditional Usage
 
 ### Direct NixOS Module Import
 

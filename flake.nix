@@ -16,7 +16,9 @@
         packages = {
           vscode-mutable = vscode-package.vscode-mutable;
           vscode-fhs = vscode-package.vscode-fhs;
-          default = vscode-package.vscode-mutable;
+          vscode-fhs-complete = vscode-package.vscode-fhs-complete;
+          vscode-complete = vscode-package.vscode-complete;
+          default = vscode-package.vscode-fhs-complete;
         };
 
         apps = {
