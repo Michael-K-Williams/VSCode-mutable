@@ -54,6 +54,9 @@
         overlays.default = final: prev: {
           vscode-mutable = (import ./default.nix { pkgs = final; }).vscode-mutable;
           vscode-fhs = (import ./default.nix { pkgs = final; }).vscode-fhs;
+          vscode-fhs-complete = (import ./default.nix { pkgs = final; }).vscode-fhs-complete;
+          # Override the regular vscode package with our FHS version
+          vscode = (import ./default.nix { pkgs = final; }).vscode-fhs-complete;
         };
 
         nixosModules.default = { config, lib, pkgs, ... }:
@@ -105,8 +108,7 @@
 
             config = lib.mkIf cfg.enable {
               environment.systemPackages = [ 
-                vscode-package.vscode-mutable 
-                vscode-package.vscode-fhs
+                vscode-package.vscode-fhs-complete
               ];
               
               # Add /usr/local/bin to system PATH
@@ -115,69 +117,11 @@
               # Install fonts for VS Code
               fonts.packages = cfg.fonts;
 
-              # Install VS Code mutably during system activation
-              system.activationScripts.vscode-mutable = ''
-                ${pkgs.writeShellScript "install-vscode" ''
-                  set -e
-                  
-                  VSCODE_DIR="${cfg.installDir}"
-                  VSCODE_URL="${cfg.vscodeUrl}"
-                  FALLBACK_URL="${cfg.fallbackUrl}"
-                  USER_NAME="${cfg.userName}"
-                  
-                  # Create directory if it doesn't exist
-                  mkdir -p "$VSCODE_DIR"
-                  
-                  # Download and extract if not already present
-                  if [ ! -f "$VSCODE_DIR/bin/code" ]; then
-                    echo "Installing VS Code to $VSCODE_DIR..." >&2
-                    cd /tmp
-                    echo "Downloading from $VSCODE_URL..." >&2
-                    ${pkgs.wget}/bin/wget -O vscode.tar.gz "$VSCODE_URL" || {
-                      echo "Download failed, trying fallback URL..." >&2
-                      ${pkgs.wget}/bin/wget -O vscode.tar.gz "$FALLBACK_URL"
-                    }
-                    echo "Extracting VS Code..." >&2
-                    PATH="${pkgs.gzip}/bin:$PATH" ${pkgs.gnutar}/bin/tar -xzf vscode.tar.gz -C "$VSCODE_DIR" --strip-components=1
-                    chown -R $USER_NAME:users "$VSCODE_DIR"
-                    chmod -R 755 "$VSCODE_DIR"
-                    rm -f vscode.tar.gz
-                    echo "VS Code installation completed" >&2
-                  fi
-                  
-                  # Create desktop entry in user directory
-                  mkdir -p /home/$USER_NAME/.local/share/applications
-                  cat > /home/$USER_NAME/.local/share/applications/code.desktop << EOF
-              [Desktop Entry]
-              Name=Visual Studio Code
-              Comment=Code Editing. Redefined.
-              GenericName=Text Editor
-              Exec=code %F
-              Icon=$VSCODE_DIR/resources/app/resources/linux/code.png
-              Type=Application
-              StartupNotify=true
-              StartupWMClass=Code
-              Categories=Utility;TextEditor;Development;IDE;
-              MimeType=text/plain;inode/directory;application/x-code-workspace;
-              Actions=new-empty-window;
-              Keywords=vscode;
-
-              [Desktop Action new-empty-window]
-              Name=New Empty Window
-              Exec=code --new-window %F
-              Icon=$VSCODE_DIR/resources/app/resources/linux/code.png
-              EOF
-                    
-                    # Set proper ownership for desktop entry
-                    chown $USER_NAME:users /home/$USER_NAME/.local/share/applications/code.desktop
-                    
-                    # Update desktop database
-                    ${pkgs.desktop-file-utils}/bin/update-desktop-database /home/$USER_NAME/.local/share/applications || true
-                    
-                    echo "VS Code downloaded and extracted successfully" >&2
-                    echo "VS Code installed to $VSCODE_DIR and available as 'code'" >&2
-                ''}
-              '';
+              # Install VS Code mutably during system activation  
+              system.activationScripts.vscode-mutable = 
+                let
+                  vscode-complete = pkgs.callPackage ./vscode-complete.nix { userName = cfg.userName; };
+                in vscode-complete.vscode-activation-script;
 
               # Ensure VS Code can run with necessary libraries
               programs.nix-ld.enable = true;
